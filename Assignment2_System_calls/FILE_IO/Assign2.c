@@ -1,8 +1,18 @@
+/***********************************************
+ * File IO
+ * *******************************************/
+
+/*********************************************
+ * 		Includes
+ ********************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
 
+/******************************************
+ * 		Main function
+ * **************************************/
 int main()
 {
 	printf("Hello Steve!\n");
@@ -19,6 +29,9 @@ int main()
 	}
 
 	char *input_string = (char *) malloc (100);
+
+	if(input_string == NULL)
+		return 1;
 
 	fp = fopen("File1.txt","a");
 	if(fp != NULL)
