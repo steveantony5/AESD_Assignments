@@ -843,7 +843,7 @@ SYSCALL_DEFINE0(getpid)
 /**
  * my_sys_call - Calls the sorting function
  *
- * 
+ * Sorts in descending order in O(nlogn)
  *
  */
 
@@ -866,7 +866,7 @@ int compare(const void *lhs, const void *rhs)
  * System call to sort the array in descending order
  * Parameters : Source array pointer, Destination array pointer, array length
  *
- * Used the built it merge sort function in sort.h
+ * Used the linux built in merge sort function in sort.h which uses O(nlogn)
  * ***********************************************************/
 	
 SYSCALL_DEFINE3(my_sys_call,int32_t *, array, int32_t, array_length,int32_t *,dest)
@@ -909,8 +909,11 @@ SYSCALL_DEFINE3(my_sys_call,int32_t *, array, int32_t, array_length,int32_t *,de
 		{
 			printk("%d\n",buf[index]);
 		}
+
+		//Calls the linux built in sort function which does sort in O(nlogn)
 		sort(buf,array_length, sizeof(int32_t),compare,NULL);
 
+		//Copies the sorted array of kernal space to the destination array in user space
 		if((copy_to_user(dest,buf,(array_length * sizeof(int32_t)))) != 0)
 		{
 			printk("Error on copy_to_user function\n");
