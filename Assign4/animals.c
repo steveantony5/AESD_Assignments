@@ -19,11 +19,11 @@
 **************************************************************************/
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Steve Antony");
-MODULE_DESCRIPTION("Module for timer");
+MODULE_DESCRIPTION("Module for animal ecosystem");
 MODULE_VERSION("0.01");
 
 /**************************************************************************
-*						LOCALS
+*			Local Variables default value when no parameter passed
 **************************************************************************/
 static int filter_count = 1;
 static char *filter_animal = "default";

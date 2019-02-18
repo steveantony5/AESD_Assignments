@@ -14,7 +14,7 @@ MODULE_DESCRIPTION("Module for timer");
 MODULE_VERSION("0.01");
 
 /**************************************************************************
-*						Local Variables
+*			Local Variables default value when no parameter passed
 **************************************************************************/
 static struct timer_list my_timer;
 static int delay_ms = 500;
