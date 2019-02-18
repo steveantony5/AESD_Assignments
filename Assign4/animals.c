@@ -1,3 +1,6 @@
+/**************************************************************************
+*						INCLUDES
+**************************************************************************/
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -6,29 +9,61 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 
-#define MAX (50)
+/**************************************************************************
+*						MACROS
+**************************************************************************/
+#define MAX (50) //max no of animals in the ecosystem
+
+/**************************************************************************
+*						Module Information
+**************************************************************************/
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Steve Antony");
+MODULE_DESCRIPTION("Module for timer");
+MODULE_VERSION("0.01");
+
+/**************************************************************************
+*						LOCALS
+**************************************************************************/
+static int filter_count = 1;
+static char *filter_animal = "default";
+
+
+
 //original array
-static char animals[MAX][10] = {"monkey", "oxen", "monkey", "dino", "otter","monkey","otter","monkey","otter","cheetah",\
+static char animals[MAX][50] = {"monkey", "oxen", "monkey", "dino", "otter","monkey","otter","monkey","otter","cheetah",\
 								 "porcupine", "anaconda", "white tiger","white tiger", "antelope", "cheetah", "bengal tiger", "otter", "panda", "bear",\
 								 "porcupine", "panda", "otter", "bull", "goat", "cow", "bison", "cow", "bison", "monkey",\
-								 };
+								 "whale", "whale", "penquin", "lamb", "pig", "rabbit", "rabbit", "panda", "panda", "panda",\
+								 "oxen", "mule", "whale", "dino", "otter", "bison", "bear", "otter", "bison", "bison"};
 static int count_animals[MAX];
 
 //sorted arrays
-static char animals_final[MAX][10];
+static char animals_final[MAX][50];
 static int count_animals_final[MAX];
+static struct animals *temp;
+
+static struct animals filtered;
+static struct animals animalList;
 
 //filtered temporary list
-char animals_filtered[MAX][10];
-int count_animals_filtered[MAX];
+static char animals_filtered[MAX][50];
+static int count_animals_filtered[MAX];
 
-
-//linked list
+//linked list for the zoo ecosystem
 struct animals{
-	char name[10];
+	char name[50];
 	struct list_head list;
 	int count;
 	};
+
+/**************************************************************************
+*						Module Parameters
+**************************************************************************/
+
+module_param(filter_animal, charp, 0644);
+module_param(filter_count, int, S_IRUSR | S_IRGRP| S_IROTH| S_IWUSR);
+
 /**********************************************************
  * Function name: Compare to sort in descending order
  * Parameters : the pointers to the two numbers which has to be compared
@@ -38,8 +73,8 @@ struct animals{
 int compare(const void *lhs, const void *rhs) 
 {
 	int cmp = 0;
-    char *lhs_string = (const char *)(lhs);
-    char *rhs_string = (const char *)(rhs);
+    char *lhs_string = (char *)(lhs);
+    char *rhs_string = (char *)(rhs);
 
  	if((cmp = strcmp(lhs_string,rhs_string)) >=0)
  	{
@@ -51,25 +86,27 @@ int compare(const void *lhs, const void *rhs)
  	}
 }
 
-
+/**************************************************************************
+*						Init Module 
+**************************************************************************/
 static int sort_init(void)
 {
+
+
 	int i = 0,final_count = 0, j =0, duplicate =0,l=0,p=0;
-		int filter_index = 0;
+	int filter_index = 0;
 
-	struct animals *temp;
-  	struct animals filtered;
-  	struct animals animalList;
 
-  	INIT_LIST_HEAD(&animalList.list);
-
+	// finding total no of animals in the ecosystem
 	int no_of_animals = (sizeof(animals) / sizeof(animals[0]));
 
 
 
 	//Calls the linux built in sort function which does sort in O(nlogn)
-	sort(animals,no_of_animals, 10,compare,NULL);
+	sort(animals,no_of_animals, 50,compare,NULL);
 
+
+	//counting the no of each animals and stroing the count in count_animals array
 	for(i =0;i<no_of_animals;i++)
 	{
 		for(l =0;l<no_of_animals;l++)
@@ -81,7 +118,7 @@ static int sort_init(void)
 		}
 	}
 
-
+	//removing the duplicate animals from the array
 	for( i =0; i<no_of_animals;i++)
 	{
 		for(j =0;j<no_of_animals;j++)
@@ -93,7 +130,7 @@ static int sort_init(void)
 		}
 
 
-
+		//copying to a temporary array which doesn't contain duplicate animals
 		if(duplicate != 1)
 		{
 			strcpy(animals_final[final_count],animals[i]);
@@ -110,7 +147,7 @@ static int sort_init(void)
 	}
 
 
-//Final animals list after removing duplicates
+	//Final animals list after removing duplicates
 	i = 0;
 	for(i=0;i<final_count;i++)
 	{
@@ -118,13 +155,13 @@ static int sort_init(void)
 	}
 
 
-//converting animals_final array and count array to a linked list
+	//converting animals_final array and count array to a linked list
 	INIT_LIST_HEAD(&animalList.list);
 
-	/* Inserting into a linked list */
-  
-   for(i=0; i<final_count; ++i)
-   {
+	/* Inserting sorted non duplicate array into a linked list */
+     for(i=0; i<final_count; ++i)
+  	 {
+
 		temp= (struct animals *)kmalloc(sizeof(struct animals), GFP_KERNEL);
 		
 		if(temp !=NULL)
@@ -141,23 +178,40 @@ static int sort_init(void)
 
 
 	}
+	printk("The number of elements of set 1 is %d\n",final_count );
+
+	printk("The total amount of memory allocated for set 1 is %d\n",(final_count * sizeof(struct animals)));
 
 	INIT_LIST_HEAD(&filtered.list);
 
-	//filtering when count >2
+	//generating the filtered array based on the filter conditions
 	list_for_each_entry(temp, &animalList.list, list)
 	{
 
-		if((temp->count) > 2)
+		if(strcmp(filter_animal,"default") == 0)
 		{
-			strcpy(animals_filtered[filter_index],(temp->name));
-			count_animals_filtered[filter_index] = (temp->count);
-			filter_index++;
+
+			if((temp->count) >= filter_count)
+			{
+				strcpy(animals_filtered[filter_index],(temp->name));
+				count_animals_filtered[filter_index] = (temp->count);
+				filter_index++;
+			}
+		}
+		else
+		{
+			if(((temp->count) >= filter_count) && (strcmp(filter_animal,(temp->name)) == 0))
+			{
+				strcpy(animals_filtered[filter_index],(temp->name));
+				count_animals_filtered[filter_index] = (temp->count);
+				filter_index++;
+			}
 		}
 		
 		
 	}
 
+	//copying the filtered array to a filtered link list
 	for(p=0;p<filter_index;p++)
 	{
 		temp= (struct animals *)kmalloc(sizeof(struct animals), GFP_KERNEL);
@@ -173,19 +227,43 @@ static int sort_init(void)
 		}
 	}
 
-	printk("Final filtered list\n-------------\n");
+	//Printing the filtered list
+	printk("Filtered list\n-------------\n");
 	list_for_each_entry(temp, &filtered.list, list)
 	{
 		printk("Name = %s Count= %d\n", temp->name, temp->count);    
 	}
+	printk("The number of elements of set 2 is %d\n",filter_index );
 
+	printk("The total amount of memory allocated for set 2 is %d\n",(filter_index * sizeof(struct animals)));
 
 	return 0;
 }
 
+/**************************************************************************
+*						Exit Module 
+**************************************************************************/
+
 static void sort_exit(void)
 {
+	int count_sort=0;
+	int count_filter=0;
+
 	printk(KERN_ALERT "Exiting!\n");
+
+	// free the nodes of linked list
+	list_for_each_entry(temp, &animalList.list, list)
+	{
+		count_sort++;
+		kfree(temp);
+	}
+	list_for_each_entry(temp, &filtered.list, list)
+	{
+		count_filter++;
+		kfree(temp);
+	}
+	printk("Freed all nodes of linked list\n");
+	printk("The total amount of memory freed is %d\n",((count_sort+count_filter) * sizeof(struct animals)));
 }
 
 
@@ -193,11 +271,5 @@ static void sort_exit(void)
 
 module_init(sort_init);
 module_exit(sort_exit);
-
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Steve Antony");
-MODULE_DESCRIPTION("Module for timer");
-MODULE_VERSION("0.01");
 
 
