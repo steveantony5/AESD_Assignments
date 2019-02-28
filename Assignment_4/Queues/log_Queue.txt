@@ -1,0 +1,22 @@
+Process 1: PID - 9351
+Process 1: IPC method- POSIX Queues
+Process 2: PID - 9352
+Process 2: IPC method- POSIX Queues
+Process 1: Sending message to process2
+Process 1: The data received 
+	steve
+
+Process 1 kill handler:Killed Process
+Process 1: Sending message to process2
+Process 2 kill handler:Killed Process
+Process 1: PID - 10033
+Process 1: IPC method- POSIX Queues
+Process 2: PID - 10034
+Process 2: IPC method- POSIX Queues
+Process 1: Sending message to process2
+Process 1: The data received 
+	command OFF
+
+Process 2 kill handler:Killed Process
+Process 1 kill handler:Killed Process
+Process 1: Sending message to process2

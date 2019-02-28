@@ -1,0 +1,74 @@
+Process 1: PID - 7376
+Process 1: IPC method- Sockets
+Process 1: PID - 7377
+Process 1: IPC method- Sockets
+Process 2: The data received jndcnjen
+
+Process 2: Sending message to process1
+Process 1: Sending message to process2
+Process 1: The data received mkm
+
+Process 2 kill handler:Killed Process
+Process 1 kill handler:Killed Process
+Process 1: PID - 8775
+Process 1: IPC method- Sockets
+Process 1: PID - 8782
+Process 1: IPC method- Sockets
+Process 2: The data received enfnw
+
+Process 2: Sending message to process1
+Process 1: Sending message to process2
+Process 1: The data received kmkf
+
+Process 1 kill handler:Killed Process
+Process 1: Sending message to process2
+Process 2 kill handler:Killed Process
+Process 2: The data received k,e
+
+Process 1: PID - 9646
+Process 1: IPC method- Sockets
+Process 1: PID - 9647
+Process 1: IPC method- Sockets
+Process 2: The data received d
+
+Process 2: Sending message to process1
+Process 1: Sending message to process2
+Process 1: The data received command ON
+
+Process 1 kill handler:Killed Process
+Process 2 kill handler:Killed Process
+Process 2: The data received 
+Process 1: PID - 9669
+Process 1: IPC method- Sockets
+Process 1: PID - 9670
+Process 1: IPC method- Sockets
+Process 2: The data received command OFF
+
+Process 2: Sending message to process1
+Process 1: Sending message to process2
+Process 1: The data received command ON
+
+Process 2: The data received dff
+
+Process 2: Sending message to process1
+Process 1: Sending message to process2
+Process 1: The data received ff
+
+Process 2 kill handler:Killed Process
+Process 1 kill handler:Killed Process
+Process 1: PID - 9688
+Process 1: IPC method- Sockets
+Process 1: PID - 9689
+Process 1: IPC method- Sockets
+Process 2: The data received steve
+
+Process 2: Sending message to process1
+Process 1: Sending message to process2
+Process 1: The data received hello
+
+Process 2 kill handler:Killed Process
+Process 2: The data received command ON
+
+Process 1: Sending message to process2
+Process 1: The data received 
+Process 1 kill handler:Killed Process

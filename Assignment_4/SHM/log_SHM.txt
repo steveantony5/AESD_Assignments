@@ -1,0 +1,45 @@
+Process 1: PID - 6910
+Process 1: IPC method- Shared memory
+Process 2: PID - 6912
+Process 2: IPC method- Shared memory
+Process 1: Sending message to process2
+Process 1: The data received s
+
+The data received ff
+
+Process 2: Sending message to process 1
+Process 1 kill handler:Killed Process
+Process 2 kill handler:Killed Process
+Process 1: PID - 6913
+Process 1: IPC method- Shared memory
+Process 2: PID - 6914
+Process 2: IPC method- Shared memory
+Process 2 kill handler:Killed Process
+Process 1 kill handler:Killed Process
+Process 1: PID - 6927
+Process 1: IPC method- Shared memory
+Process 2: PID - 6928
+Process 2: IPC method- Shared memory
+Process 2 kill handler:Killed Process
+Process 1 kill handler:Killed Process
+Process 1: PID - 10082
+Process 1: IPC method- Shared memory
+Process 2: PID - 10083
+Process 2: IPC method- Shared memory
+Process 1: Sending message to process2
+Process 1: The data received command ON
+
+The data received hey
+
+Process 2: Sending message to process 1
+Process 1: Sending message to process2
+Process 1: The data received command ON
+
+The data received command OFF
+
+Process 2: Sending message to process 1
+Process 2 kill handler:Killed Process
+The data received command ON
+
+Process 1 kill handler:Killed Process
+Process 1: Sending message to process2
