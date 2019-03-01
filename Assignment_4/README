@@ -1,0 +1,60 @@
+Inter Process Communication
+---------------------------
+Interprocess communication is achieved through Pipes, Queues, Shared Memory, Sockets.
+A Chat application has been implemented using IPC communications. Also it can detect command if the input string starts 
+with the keyword "command"
+
+LED turn ON and Turn OFF commands are implemented
+To turn ON the LED -> command ON
+To turn OFF the LED -> command OFF
+
+These can be executed on LINUX Platform or BBG
+
+Pipes:
+-------
+Two pipes are created one for the communication from Parent to Child and 
+other for the communication from child to Parent
+
+Steps to execute
+1) ./Process_Pipes
+
+Queues:
+-------
+POSIX Queue is used for IPC communication.
+
+Steps to execute
+1) ./Process1_Q
+2) ./Process2_Q
+
+Shared Memory:
+--------------
+System V API are used for shared memory communication. Shared memory is very advantageous when compared
+to other IPC methods as they don't go through the kernel whereas other IPC communications goes through the kernel due to which
+they require many context switches
+
+Steps to execute
+1) ./Process1_S
+2) ./Process2_S
+
+Sockets
+--------
+TCP Sockets are used for IPC communication. They can even be used for communication between different system processes
+
+Steps to execute
+1) ./Process2_SOC <PORT NO>
+2) ./Process1_SOC <IP> <PORT NO>
+
+P-Threads
+---------
+Posix threads are to create two threads.
+
+Thread 1:
+---------
+Thread 1 counts the number of occurances of each character from an input files
+
+Thread 2:
+---------
+Thread 2 is used to find the CPU Utilization. POSIX timers are used to print the CPU utilization to a log file at regular intervals.
+
+Steps to execute
+1) ./thread <log_filename>
