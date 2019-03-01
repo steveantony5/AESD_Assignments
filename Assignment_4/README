@@ -50,7 +50,7 @@ Posix threads are to create two threads.
 
 Thread 1:
 ---------
-Thread 1 counts the number of occurances of each character from an input files
+Thread 1 counts the number of occurances of each character from an input files. There should be an input file with the name "input.txt"
 
 Thread 2:
 ---------
