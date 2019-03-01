@@ -1,15 +1,12 @@
-#include <stdio.h>
-#include <sys/shm.h>
-#include <sys/ipc.h>
-#include <unistd.h>
-#include <string.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <time.h>
+/******************************************
+			Include
+******************************************/
+#include "SHM.h"
 
-void LED(void);
 
+/******************************************
+			MACROS
+******************************************/
 #define SH_SIZE (100)
 #define SHM_KEY (0x2323)
 #define BUFFER_SIZE (150)
@@ -18,6 +15,9 @@ void LED(void);
 #define  FILLED     0
 #define  TAKEN      1
 
+/******************************************
+			Globals
+******************************************/
 char buffer[BUFFER_SIZE];
 
 
@@ -32,10 +32,15 @@ int shmid;
 char command[10];
 
 
+/******************************************
+			Signal Handler
+		  For Signal SIGINT
+******************************************/
 void hanler_kill_process1(int num)
 {
 	printf("Killed Process 1\n");
 	FILE *log_handler;
+
 
 	log_handler = fopen("log_SHM.txt","a+");
 	if(log_handler == NULL)
@@ -44,9 +49,9 @@ void hanler_kill_process1(int num)
 	}
 
 			
-
+ 
 	memset(buffer,0, BUFFER_SIZE);
-    sprintf(buffer,"%d\tProcess 1 kill handler:Killed Process\n",(int)time(NULL));      
+    sprintf(buffer,"%d\tProcess 1 kill handler:Killed Process due to signal %d\n",(int)time(NULL),num);      
     fwrite(buffer, 1, strlen(buffer),log_handler);
 	
 	fclose(log_handler);
@@ -64,7 +69,9 @@ void hanler_kill_process1(int num)
 
     exit(0);
 }
-
+/******************************************
+			Main function
+******************************************/
 int main()
 {
 
@@ -78,39 +85,23 @@ int main()
 		return -1;
 	}
 
+	//setup Shared memory
+	if(setup_SHM()!=0)
+	{
+		return 1;
+	}
+
+	
+
 	memset(buffer, 0, BUFFER_SIZE);
 
-	sprintf(buffer,"%d\tProcess 1: PID - %d\t IPC method- Shared memory\n",(int)time(NULL),getpid());
+	sprintf(buffer,"%d\tProcess 1: PID - %d\t IPC method- Shared memory\tSHM id %d\n",(int)time(NULL),getpid(),shmid);
 	printf("%s",buffer);
 	fwrite(buffer, 1, strlen(buffer),log);
 
 	fclose(log);
 
-
-	key_t key = SHM_KEY;
-
-
-	shmid = shmget(key,sizeof(struct shared_data), 0644|IPC_CREAT);
-	if(shmid <= 0)
-	{
-		printf("Error on creating shared memory\n");
-	}
-	else
-	{
-		printf("Created shared memory\n");
-	}
-
-	shared_address = (struct shared_data *)shmat(shmid, NULL, 0);
-
-	if ( shared_address == (void *)-1)
-	{
-		printf("Attachement failed\n");
-	}
-
-	else
-	{
-
-		printf("Shared address %p\n",shared_address);
+	
 		
 		shared_address-> data_available = NOT_READY;
 
@@ -123,11 +114,14 @@ int main()
 				return -1;
 			}
 
+			//sending data to the other process
 			printf("Enter the message to be sent to process 2\n");
 			memset(shared_address->message, 0, SH_SIZE);
 			fgets(shared_address->message , SH_SIZE, stdin);
+			//setting the flag as filled
 			shared_address-> data_available = FILLED;
 			printf("data available\n");
+
 
 			memset(buffer, 0, BUFFER_SIZE);
 			sprintf(buffer,"%d\tProcess 1: Sending message to process2\n",(int)time(NULL));
@@ -136,43 +130,42 @@ int main()
 
 			
 
-
+			//wait till the read is completed on the other process
 			while (shared_address->data_available != TAKEN)
           		sleep(1);
 
+
+          	//wait if the shared memory is already filled
           	while(shared_address->data_available != FILLED)
           		sleep(1);
 
           	memset(buffer, 0, BUFFER_SIZE);
 
+          	//read data from the shared memory
 			sprintf(buffer,"%d\tProcess 1: The data received %s\n",(int)time(NULL),shared_address->message);
 			printf("%s",buffer);
 			fwrite(buffer, 1, strlen(buffer),log);
 
+			//check if any command is received
 			sscanf(shared_address->message,"%s",command);
       		if(strcmp(command,"command") == 0)
       		{
         		LED();
       		}
       
+      		//set the flag as the memory is read
       		shared_address->data_available = TAKEN;
 
       		fclose(log);
       	}
 
-	
-
-	}
-
-
-
-
 }
 
 
 
-
-
+/******************************************************
+		Function for LED Control
+******************************************************/
 
 void LED()
 {
@@ -191,4 +184,32 @@ void LED()
     {
         printf("Invalid command received\n");
     }
+}
+
+/******************************************************
+		Function for Setting up shared memory
+******************************************************/
+int setup_SHM()
+{
+
+	key_t key = SHM_KEY;
+
+	shmid = shmget(key,sizeof(struct shared_data), 0644|IPC_CREAT);
+	if(shmid <= 0)
+	{
+		printf("Error on creating shared memory\n");
+	}
+	else
+	{
+		printf("Created shared memory\n");
+	}
+
+	shared_address = (struct shared_data *)shmat(shmid, NULL, 0);
+
+	if ( shared_address == (void *)-1)
+	{
+		printf("Attachement failed\n");
+		return 1;
+	}
+	return 0;
 }

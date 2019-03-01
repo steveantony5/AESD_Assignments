@@ -1,22 +1,30 @@
-#include <stdio.h>
-#include <unistd.h> 
-#include <string.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <time.h>
+/*****************************************************
+                Includes
+*****************************************************/
+#include "Process_pipes.h"
 
+/*****************************************************
+                Macros
+*****************************************************/
 #define BUFFERSIZE (200)
 
-
-void LED(void);
-
+/*****************************************************
+                Globals
+*****************************************************/
 char buffer[BUFFERSIZE];
 char message[BUFFERSIZE];
 char command[10];
-
 int pipe_fd_1[2], pipe_fd_2[2];
 
+
+/*****************************************************
+                Globals
+*****************************************************/
+
+/*****************************************************
+                Parent signal handler
+            Handler for SIGNAL SIGINT
+*****************************************************/
 void hanler_kill_Parent(int num)
 {
         FILE *log_handler;
@@ -30,7 +38,7 @@ void hanler_kill_Parent(int num)
                         
 
         memset(buffer,0, BUFFERSIZE);
-        sprintf(buffer,"%d\tParent kill handler:Killed Process\n",(int)time(NULL));      
+        sprintf(buffer,"%d\tParent kill handler:Killed Process due to signal number %d\n",(int)time(NULL),num);      
         fwrite(buffer, 1, strlen(buffer),log_handler);
         printf("%s",buffer);
 
@@ -43,6 +51,10 @@ void hanler_kill_Parent(int num)
         exit(0);
 }
 
+/*****************************************************
+                Child signal handler
+            Handler for SIGNALS SIGINT
+*****************************************************/
 void hanler_kill_Child(int num)
 {
         FILE *log_handler;
@@ -56,7 +68,7 @@ void hanler_kill_Child(int num)
                         
 
         memset(buffer,0, BUFFERSIZE);
-        sprintf(buffer,"%d\tChild kill handler:Killed Process\n",(int)time(NULL));      
+        sprintf(buffer,"%d\tChild kill handler:Killed Process due to signal number %d\n",(int)time(NULL),num);     
         fwrite(buffer, 1, strlen(buffer),log_handler);
         printf("%s",buffer);
 
@@ -68,6 +80,9 @@ void hanler_kill_Child(int num)
         exit(0);
 }
 
+/*****************************************************
+                Main function
+*****************************************************/
 int main()
 {
 	int pid;
@@ -87,8 +102,10 @@ int main()
 		return 1;
 	}
 
+    //forking to create a new child process
 	pid = fork();
 
+    //fork error
 	if(pid < 0)
 	{
 		printf("failed on forking\n");
@@ -139,6 +156,8 @@ int main()
                 fclose(log);
 		}
 	}
+
+    //child process
 	else if(pid == 0)
 	{
         signal(SIGINT,hanler_kill_Child);
@@ -189,6 +208,9 @@ int main()
 
 }
 
+/*****************************************************
+                LED Control function
+*****************************************************/
 void LED()
 {
     char LED_state[10];

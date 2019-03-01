@@ -1,9 +1,13 @@
-
+/*****************************************************************
+						Includes
+*****************************************************************/
 #include "POSIX_Timer.h"
 
-extern float CPU_utiliztion;
-extern timer_t timer_id;
 
+/*****************************************************************
+					POSIX Timer Handler
+			Prints CPU utilization every 100ms to the log file
+*****************************************************************/
 
 void my_timer_handler (union sigval val)
 {
@@ -22,11 +26,13 @@ void my_timer_handler (union sigval val)
 	}
 	fclose(log);
 
-	kick_timer(100000000);
+	kick_timer(DELAY_NS);
 }
 
-
-int setup_timer_POSIX(int interval_secs)
+/*****************************************************************
+					POSIX Timer configuration
+*****************************************************************/
+int setup_timer_POSIX()
 {
 	struct 	sigevent sev;
 	sev.sigev_notify = SIGEV_THREAD; //Upon timer expiration, invoke sigev_notify_function
@@ -45,15 +51,18 @@ int setup_timer_POSIX(int interval_secs)
     return 0;
 }
 
-
-int kick_timer(int interval_secs)
+/*****************************************************************
+					Start configuration
+			Parameter : delay in nano secs
+*****************************************************************/
+int kick_timer(int interval_ns)
 {
    struct itimerspec in;
 
 	in.it_value.tv_sec = 0;
-    in.it_value.tv_nsec = 100000000;
+    in.it_value.tv_nsec = interval_ns; //sets initial time period
     in.it_interval.tv_sec = 0;
-    in.it_interval.tv_nsec = interval_secs;
+    in.it_interval.tv_nsec = interval_ns; //sets interval
     
     //issue the periodic timer request here.
     int status = timer_settime(timer_id, 0, &in, NULL) ;
@@ -65,6 +74,9 @@ int kick_timer(int interval_secs)
     return 0;
 }
 
+/*****************************************************************
+					Destroy Timer
+*****************************************************************/
 int stop_timer()
 {
 	timer_delete(timer_id);

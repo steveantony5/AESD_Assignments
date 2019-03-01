@@ -12,9 +12,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-
+/*****************************************************************
+						Macros
+*****************************************************************/
 #define BUFFERSIZE (500)
-
+#define Delay_NS (100000000) //100 ms
 /*****************************************************************
 						Globals
 *****************************************************************/
@@ -51,7 +53,7 @@ void hanler_kill_child2(int num)
 		printf("Master: Error on opening file\n");
 
 	memset(buffer,0, BUFFERSIZE);
-    sprintf(buffer,"%d\tChild2 kill handler:Killed thread\n",(int)time(NULL));      
+    sprintf(buffer,"%d\tChild2 kill handler:Killed thread due to signal %d\n",(int)time(NULL),num);      
     fwrite(buffer, 1, strlen(buffer),log_handler);
     printf("%s",buffer);
 
@@ -73,7 +75,7 @@ void hanler_kill_child1(int num)
 		printf("Master: Error on opening file\n");
 
 	memset(buffer,0, BUFFERSIZE);
-    sprintf(buffer,"%d\tChild1 kill handler:Killed thread\n",(int)time(NULL));      
+    sprintf(buffer,"%d\tChild1 kill handler:Killed thread due to signal %d\n",(int)time(NULL),num);      
     fwrite(buffer, 1, strlen(buffer),log_handler);
     printf("%s",buffer);
 
@@ -106,6 +108,7 @@ void *character_histogram(void *args)
 	fwrite(buffer, 1, strlen(buffer),log_1);
 	printf("%s",buffer);
 
+	//signal handlers
 	signal(SIGUSR1,hanler_kill_child1);
 	signal(SIGUSR2,hanler_kill_child1);
 
@@ -124,6 +127,8 @@ void *character_histogram(void *args)
 		printf("Child 1: input.txt doesn't exists\n");
 
 	char ch;
+
+	//count the characters
 	while(!feof(input_file))
 	{
 		ch = fgetc(input_file);
@@ -142,7 +147,7 @@ void *character_histogram(void *args)
 	//display the count
 	for(int index = 0; index<26;index++)
 	{
-
+		//display characters that occured less than 100 times
 		if(ch_count[index] < 100)
 		{
 			memset(buffer,0,BUFFERSIZE);
@@ -217,7 +222,9 @@ void * master_thread(void *args)
 }
 
 
-
+/*****************************************************************
+						Child 2 thread
+*****************************************************************/
 void * CPU_time_utilization(void *args)
 {
 
@@ -258,11 +265,11 @@ void * CPU_time_utilization(void *args)
 
 	fclose(log_2);
 
-	
+	//signal handlers
 	signal(SIGUSR1,hanler_kill_child2);
 	signal(SIGUSR2,hanler_kill_child2);
 
-	kick_timer(100000000);
+	kick_timer(Delay_NS);
 
 
 
@@ -301,7 +308,9 @@ void * CPU_time_utilization(void *args)
 
 }
 
-
+/*****************************************************************
+						Main Function
+*****************************************************************/
 
 int main(int argc, char **argv)
 {
@@ -311,10 +320,10 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	setup_timer_POSIX(100000000);
+	setup_timer_POSIX();
 
 	
-
+	//getting the log filename
 	strcpy(file_obj.filename_log,argv[1]);
 
 	pthread_attr_t attr;
@@ -326,6 +335,8 @@ int main(int argc, char **argv)
 
 	pthread_create(&child2, &attr, CPU_time_utilization, &file_obj);  
 
+
+	//wait till the child completes
 	pthread_join(child1,NULL);
 	pthread_join(child2,NULL);
 

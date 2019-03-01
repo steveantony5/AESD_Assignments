@@ -1,26 +1,21 @@
-#include <mqueue.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <time.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <time.h>
+/********************************************
+              Includes
+********************************************/
+#include "Process_Q.h"
 
-#define QUEUE_NAME  "/my_queue"
-#define BUFFER_SIZE (200)
 
-void LED(void);
-
+/********************************************
+              Globals
+********************************************/
 char buffer[BUFFER_SIZE];
 char message[BUFFER_SIZE];
 mqd_t my_queue;
 char command[10];
 
-
+/********************************************
+              Signal Handler
+            For signal SIGINT
+********************************************/
 
 void hanler_kill_process1(int num)
 {
@@ -36,7 +31,7 @@ void hanler_kill_process1(int num)
                         
 
         memset(buffer,0, BUFFER_SIZE);
-        sprintf(buffer,"%d\tProcess 1 kill handler:Killed Process\n",(int)time(NULL));      
+        sprintf(buffer,"%d\tProcess 1 kill handler:Killed Process due to signal %d\n",(int)time(NULL),num);      
         fwrite(buffer, 1, strlen(buffer),log_handler);
 
         fclose(log_handler);
@@ -47,6 +42,9 @@ void hanler_kill_process1(int num)
         exit(0);
 }
 
+/********************************************
+              Main Function
+********************************************/
 int main()
 {
     signal(SIGINT,hanler_kill_process1);
@@ -61,79 +59,67 @@ int main()
 
     memset(buffer, 0, BUFFER_SIZE);
 
-    sprintf(buffer,"%d\tProcess 1: PID - %d\t IPC method- POSIX Queues\n",(int)time(NULL),getpid());
+    sprintf(buffer,"%d\tProcess 1: PID - %d\t IPC method- POSIX Queues\t Queue name %s\n",(int)time(NULL),getpid(),QUEUE_NAME);
     printf("%s",buffer);
     fwrite(buffer, 1, strlen(buffer),log);
 
     fclose(log);
 
 
-	struct mq_attr attributes;
-
-	  attributes.mq_flags = 0;       /* Flags: 0 or O_NONBLOCK */
-    attributes.mq_maxmsg = 10;      /* Max. # of messages on queue */
-    attributes.mq_msgsize = BUFFER_SIZE;     /* Max. message size (bytes) */
-    attributes.mq_curmsgs = 5;     /* # of messages currently in queue */
-
-   	my_queue = mq_open(QUEUE_NAME, O_CREAT | O_RDWR, 0666, &attributes);		
-   	if(my_queue == (mqd_t) -1)
-   	{
-   		printf("Error on queue creation\n");
-   		return 1;
-   	}
-
-
-   	while(1)
-   	{
-   		//opening the file in read mode
-      log =fopen("log_Queue.txt","a+");
-                                
-      //checking whether the file exists in client folder
-      if(log == NULL)
+     // initiate queue
+	   if(queue_creation() != 0)
       {
-        printf("Process1: File doesn't exits\n");
         return 1;
       }
+
+      while(1)
+   	  {
+   		  //opening the file in read mode
+        log =fopen("log_Queue.txt","a+");
+                                
+        //checking whether the file exists in client folder
+        if(log == NULL)
+        {
+          printf("Process1: File doesn't exits\n");
+          return 1;
+        }
 
 
    		
 
-   		memset(buffer, 0, BUFFER_SIZE);
-      sprintf(buffer,"%d\tProcess 1: Sending message to process2\n",(int)time(NULL));
-      fwrite(buffer, 1, strlen(buffer),log);
+   		  memset(buffer, 0, BUFFER_SIZE);
+        sprintf(buffer,"%d\tProcess 1: Sending message to process2\n",(int)time(NULL));
+        fwrite(buffer, 1, strlen(buffer),log);
 
-		  memset(message, 0, BUFFER_SIZE);
-   		printf("Enter the message to be sent to process 2\n");
-   		fgets(message,BUFFER_SIZE, stdin);
+		    memset(message, 0, BUFFER_SIZE);
+   		  printf("Enter the message to be sent to process 2\n");
+   		  fgets(message,BUFFER_SIZE, stdin);
 
-   		mq_send(my_queue, message, BUFFER_SIZE, 0);
+   		  mq_send(my_queue, message, BUFFER_SIZE, 0);
+  
+        memset(message, 0, BUFFER_SIZE);
+  
+        mq_receive(my_queue, message, BUFFER_SIZE, 0);
+  
+        //Check if any command for LED is received
+        sscanf(message,"%s",command);
+        if(strcmp(command,"command") == 0)
+        {
+          LED();
+        }
 
-      memset(message, 0, BUFFER_SIZE);
+   		   memset(buffer, 0, BUFFER_SIZE);
+        sprintf(buffer,"%d\tProcess 1: The data received is %s\n",(int)time(NULL),message);
+        fwrite(buffer, 1, strlen(buffer),log);
+        printf("%s\n",buffer);
 
-      mq_receive(my_queue, message, BUFFER_SIZE, 0);
-
-
-      sscanf(message,"%s",command);
-      if(strcmp(command,"command") == 0)
-      {
-        LED();
-      }
-
-   		memset(buffer, 0, BUFFER_SIZE);
-      sprintf(buffer,"%d\tProcess 1: The data received is %s\n",(int)time(NULL),message);
-      fwrite(buffer, 1, strlen(buffer),log);
-      printf("%s\n",buffer);
-
-      fclose(log);
-
-       	
+        fclose(log);
+     	
 
    	}
 	
 
 }
-
-
 
 void LED()
 {
@@ -152,4 +138,25 @@ void LED()
     {
         printf("Invalid command received\n");
     }
+}
+
+/********************************************
+        Function for creating queue
+********************************************/
+int queue_creation()
+{
+    struct mq_attr attributes;
+
+    attributes.mq_flags = 0;       /* Flags: 0 or O_NONBLOCK */
+    attributes.mq_maxmsg = 10;      /* Max. # of messages on queue */
+    attributes.mq_msgsize = BUFFER_SIZE;     /* Max. message size (bytes) */
+    attributes.mq_curmsgs = 5;     /* # of messages currently in queue */
+
+    my_queue = mq_open(QUEUE_NAME, O_CREAT | O_RDWR, 0666, &attributes);    
+    if(my_queue == (mqd_t) -1)
+    {
+      printf("Error on queue creation\n");
+      return 1;
+    }
+    return 0;
 }
