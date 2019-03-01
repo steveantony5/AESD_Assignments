@@ -1,0 +1,59 @@
+1277	Child2:Entered thread
+1277	Child2: PID -1229630256	Linux ID 1977
+1277	Master:Entered thread
+1277	master: PID -1225435952	Linux ID 1977
+1277	Master: Thread Exited
+1277	Child 1: Entered thread
+1277	Child1: PID -1227533104	Linux ID 1977
+1277	J|j - 26
+1277	Q|q - 4
+1277	X|x - 84
+1277	Z|z - 12
+1277	Child 1: Thread Exited
+1277	CPU Utilization 0.157617
+1277	CPU Utilization 0.157689
+1277	CPU Utilization 0.157762
+1277	CPU Utilization 0.157835
+1277	CPU Utilization 0.157908
+1277	CPU Utilization 0.157980
+1277	CPU Utilization 0.158053
+1278	CPU Utilization 0.158125
+1278	CPU Utilization 0.158198
+1278	CPU Utilization 0.158271
+1278	CPU Utilization 0.158343
+1278	CPU Utilization 0.158416
+1278	CPU Utilization 0.158488
+1278	CPU Utilization 0.158561
+1278	CPU Utilization 0.158634
+1278	CPU Utilization 0.158706
+1279	CPU Utilization 0.158779
+1279	CPU Utilization 0.158851
+1279	CPU Utilization 0.158924
+1279	CPU Utilization 0.158996
+1279	CPU Utilization 0.159069
+1279	CPU Utilization 0.159141
+1279	CPU Utilization 0.159214
+1279	CPU Utilization 0.159286
+1279	CPU Utilization 0.159358
+1280	CPU Utilization 0.159431
+1280	CPU Utilization 0.159503
+1280	CPU Utilization 0.159576
+1280	CPU Utilization 0.159648
+1280	CPU Utilization 0.159720
+1280	CPU Utilization 0.159793
+1280	CPU Utilization 0.159865
+1280	CPU Utilization 0.159937
+1280	CPU Utilization 0.160010
+1281	CPU Utilization 0.160082
+1281	CPU Utilization 0.160154
+1281	CPU Utilization 0.160227
+1281	CPU Utilization 0.160299
+1281	CPU Utilization 0.160371
+1281	CPU Utilization 0.160443
+1281	CPU Utilization 0.160516
+1281	CPU Utilization 0.160588
+1281	CPU Utilization 0.160660
+1282	CPU Utilization 0.160732
+1282	CPU Utilization 0.160804
+1282	CPU Utilization 0.160876
+1282	Child1 kill handler:Killed thread due to signal 10

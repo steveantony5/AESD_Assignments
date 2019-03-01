@@ -1,0 +1,23 @@
+771	Child2:Entered thread
+771	Child2: PID -1229855536	Linux ID 1881
+771	Master:Entered thread
+771	master: PID -1225661232	Linux ID 1881
+771	Master: Thread Exited
+771	Child 1: Entered thread
+771	Child1: PID -1227758384	Linux ID 1881
+771	J|j - 26
+771	Q|q - 4
+771	X|x - 84
+771	Z|z - 12
+771	Child 1: Thread Exited
+771	CPU Utilization 0.247023
+771	CPU Utilization 0.247131
+771	CPU Utilization 0.247239
+771	CPU Utilization 0.247346
+771	CPU Utilization 0.247454
+771	CPU Utilization 0.247561
+771	CPU Utilization 0.247669
+772	CPU Utilization 0.247776
+772	CPU Utilization 0.247884
+772	CPU Utilization 0.247991
+772	CPU Utilization 0.248098
