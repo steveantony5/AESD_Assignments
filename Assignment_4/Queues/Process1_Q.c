@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
 
 #define QUEUE_NAME  "/my_queue"
 #define BUFFER_SIZE (200)
@@ -33,7 +35,9 @@ void hanler_kill_process1(int num)
 
                         
 
-        fwrite("Process 1 kill handler:Killed Process\n", 1, strlen("Process 1 kill handler:Killed Process\n"),log_handler);
+        memset(buffer,0, BUFFER_SIZE);
+        sprintf(buffer,"%d\tProcess 1 kill handler:Killed Process\n",(int)time(NULL));      
+        fwrite(buffer, 1, strlen(buffer),log_handler);
 
         fclose(log_handler);
 
@@ -57,7 +61,7 @@ int main()
 
     memset(buffer, 0, BUFFER_SIZE);
 
-    sprintf(buffer,"Process 1: PID - %d\nProcess 1: IPC method- POSIX Queues\n",getpid());
+    sprintf(buffer,"%d\tProcess 1: PID - %d\t IPC method- POSIX Queues\n",(int)time(NULL),getpid());
     printf("%s",buffer);
     fwrite(buffer, 1, strlen(buffer),log);
 
@@ -95,7 +99,7 @@ int main()
    		
 
    		memset(buffer, 0, BUFFER_SIZE);
-      sprintf(buffer,"Process 1: Sending message to process2\n");
+      sprintf(buffer,"%d\tProcess 1: Sending message to process2\n",(int)time(NULL));
       fwrite(buffer, 1, strlen(buffer),log);
 
 		  memset(message, 0, BUFFER_SIZE);
@@ -108,7 +112,6 @@ int main()
 
       mq_receive(my_queue, message, BUFFER_SIZE, 0);
 
-      printf("Process 1: %s\n",message);
 
       sscanf(message,"%s",command);
       if(strcmp(command,"command") == 0)
@@ -117,8 +120,10 @@ int main()
       }
 
    		memset(buffer, 0, BUFFER_SIZE);
-      sprintf(buffer,"Process 1: The data received \n\t%s\n",message);
+      sprintf(buffer,"%d\tProcess 1: The data received is %s\n",(int)time(NULL),message);
       fwrite(buffer, 1, strlen(buffer),log);
+      printf("%s\n",buffer);
+
       fclose(log);
 
        	

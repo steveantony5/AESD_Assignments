@@ -32,7 +32,6 @@ char message[BUFFERSIZE];
 int new_socket, server_socket;
 char command[10];
 
-struct timeval t_obj;
 
 
 
@@ -52,9 +51,9 @@ void hanler_kill_process2(int num)
         printf("error on opening log handler file\n");
     }
 
-            
-
-    fwrite("Process 2 kill handler:Killed Process\n", 1, strlen("Process 2 kill handler:Killed Process\n"),log_handler);
+    memset(buffer,0, BUFFERSIZE);
+    sprintf(buffer,"%d\tProcess 2 kill handler:Killed Process\n",(int)time(NULL));      
+    fwrite(buffer, 1, strlen(buffer),log_handler);
 
     fclose(log_handler);
 
@@ -87,9 +86,8 @@ int main(int argc, char *argv[])
 
 
         memset(buffer, 0, BUFFERSIZE);
-        gettimeofday(&t_obj, NULL);
 
-        sprintf(buffer,"%s Process 1: PID - %d\nProcess 1: IPC method- Sockets\n",ctime(&t_obj.tv_sec),getpid());
+        sprintf(buffer,"%d\tProcess 2: PID - %d\tIPC method- Sockets\n",(int)time(NULL),getpid());
         printf("%s",buffer);
         fwrite(buffer, 1, strlen(buffer),log);
 
@@ -178,17 +176,20 @@ int main(int argc, char *argv[])
 
                 recv(new_socket,message ,BUFFERSIZE, 0);
 
-                printf("Process 2: Data received from Process 1\n\t%s\n",message);
+
+                
+
+                memset(buffer, 0, BUFFERSIZE);
+
+                sprintf(buffer,"%d\tProcess 2: The data received %s\n",(int)time(NULL),message);
+                fwrite(buffer, 1, strlen(buffer),log);
+                printf("%s",buffer);
 
                 sscanf(message,"%s",command);
                 if(strcmp(command,"command") == 0)
                 {
                     LED();
                 }
-
-                memset(buffer, 0, BUFFERSIZE);
-                sprintf(buffer,"Process 2: The data received %s\n",message);
-                fwrite(buffer, 1, strlen(buffer),log);
 
 
                 memset(message, 0, BUFFERSIZE);
@@ -198,7 +199,8 @@ int main(int argc, char *argv[])
 
                 send(new_socket, message, BUFFERSIZE , 0);
                 memset(buffer, 0, BUFFERSIZE);
-                sprintf(buffer,"Process 2: Sending message to process1\n");
+
+                sprintf(buffer,"%d\tProcess 2: Sending message to process1\n",(int)time(NULL));
                 fwrite(buffer, 1, strlen(buffer),log);
                 fclose(log);
 

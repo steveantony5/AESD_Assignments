@@ -20,6 +20,8 @@
 #include<string.h>
 #include<arpa/inet.h>
 #include<signal.h>
+#include <sys/time.h>
+#include <time.h>
 
 #define BUFFERSIZE (200) 
 char buffer[BUFFERSIZE];
@@ -39,9 +41,9 @@ void hanler_kill_process1(int num)
                 printf("error on opening log handler file\n");
         }
 
-                        
-
-        fwrite("Process 1 kill handler:Killed Process\n", 1, strlen("Process 1 kill handler:Killed Process\n"),log_handler);
+        memset(buffer,0, BUFFERSIZE);
+        sprintf(buffer,"%d\tProcess 1 kill handler:Killed Process\n",(int)time(NULL));      
+        fwrite(buffer, 1, strlen(buffer),log_handler);
 
         fclose(log_handler);
 
@@ -72,7 +74,7 @@ int main(int argc, char *argv[])
 
         memset(buffer, 0, BUFFERSIZE);
 
-        sprintf(buffer,"Process 1: PID - %d\nProcess 1: IPC method- Sockets\n",getpid());
+        sprintf(buffer,"%d\tProcess 1: PID - %d\tIPC method- Sockets\n",(int)time(NULL),getpid());
         printf("%s",buffer);
         fwrite(buffer, 1, strlen(buffer),log);
 
@@ -129,17 +131,17 @@ int main(int argc, char *argv[])
                 send(client_socket, message, BUFFERSIZE , 0);
 
                 memset(buffer, 0, BUFFERSIZE);
-                sprintf(buffer,"Process 1: Sending message to process2\n");
+                sprintf(buffer,"%d\tProcess 1: Sending message to process2\n",(int)time(NULL));
                 fwrite(buffer, 1, strlen(buffer),log);
 
                 memset(message, 0, BUFFERSIZE);
 
                 recv(client_socket,message ,BUFFERSIZE, 0);
-                printf("Process 1: Data received from Process 2\n\t%s\n",message);
 
                 memset(buffer, 0, BUFFERSIZE);
-                sprintf(buffer,"Process 1: The data received %s\n",message);
+                sprintf(buffer,"%d\tProcess 1: The data received is %s\n",(int)time(NULL),message);
                 fwrite(buffer, 1, strlen(buffer),log);
+                printf("%s",buffer);
 
                 sscanf(message,"%s",command);
                 if(strcmp(command,"command") == 0)
@@ -162,6 +164,7 @@ void LED()
     if(strcmp(LED_state,"ON")==0)
     {
         printf("Turned on the LED\n");
+
     }
     else if(strcmp(LED_state,"OFF")==0)
     {

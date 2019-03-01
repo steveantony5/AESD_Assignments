@@ -5,6 +5,8 @@
 #include <string.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
 
 void LED(void);
 
@@ -15,6 +17,9 @@ void LED(void);
 #define  NOT_READY  -1
 #define  FILLED     0
 #define  TAKEN      1
+
+char buffer[BUFFER_SIZE];
+
 
 struct shared_data
 {
@@ -40,8 +45,10 @@ void hanler_kill_process1(int num)
 
 			
 
-	fwrite("Process 1 kill handler:Killed Process\n", 1, strlen("Process 1 kill handler:Killed Process\n"),log_handler);
-
+	memset(buffer,0, BUFFER_SIZE);
+    sprintf(buffer,"%d\tProcess 1 kill handler:Killed Process\n",(int)time(NULL));      
+    fwrite(buffer, 1, strlen(buffer),log_handler);
+	
 	fclose(log_handler);
 
 	if (shmdt(shared_address) == -1) 
@@ -60,7 +67,6 @@ void hanler_kill_process1(int num)
 
 int main()
 {
-	char buffer[BUFFER_SIZE];
 
 	signal(SIGINT,hanler_kill_process1);
 
@@ -74,7 +80,7 @@ int main()
 
 	memset(buffer, 0, BUFFER_SIZE);
 
-	sprintf(buffer,"Process 1: PID - %d\nProcess 1: IPC method- Shared memory\n",getpid());
+	sprintf(buffer,"%d\tProcess 1: PID - %d\t IPC method- Shared memory\n",(int)time(NULL),getpid());
 	printf("%s",buffer);
 	fwrite(buffer, 1, strlen(buffer),log);
 
@@ -124,7 +130,7 @@ int main()
 			printf("data available\n");
 
 			memset(buffer, 0, BUFFER_SIZE);
-			sprintf(buffer,"Process 1: Sending message to process2\n");
+			sprintf(buffer,"%d\tProcess 1: Sending message to process2\n",(int)time(NULL));
 			printf("%s",buffer);
 			fwrite(buffer, 1, strlen(buffer),log);
 
@@ -139,7 +145,7 @@ int main()
 
           	memset(buffer, 0, BUFFER_SIZE);
 
-			sprintf(buffer,"Process 1: The data received %s\n",shared_address->message);
+			sprintf(buffer,"%d\tProcess 1: The data received %s\n",(int)time(NULL),shared_address->message);
 			printf("%s",buffer);
 			fwrite(buffer, 1, strlen(buffer),log);
 

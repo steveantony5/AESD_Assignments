@@ -1,21 +1,18 @@
 
 #include "POSIX_Timer.h"
 
-extern char CPU_time[10], idle_time[10];
+extern float CPU_utiliztion;
 extern timer_t timer_id;
 
 
 void my_timer_handler (union sigval val)
 {
 
-	float CPU_time_int = atoi (CPU_time);
-	float idle_time_int = atoi(idle_time);
-
-	float CPU_Utilization_perc = ((idle_time_int - CPU_time_int) / (idle_time_int + CPU_time_int));
-	printf("CPU Utilization %f\n",CPU_Utilization_perc);
-
 	char buffer[100];
-	sprintf(buffer,"CPU Utilization %f\n",CPU_Utilization_perc);
+	memset(buffer,0,sizeof(buffer));
+
+	sprintf(buffer,"%d\tCPU Utilization %f\n",(int)time(NULL),CPU_utiliztion);
+	printf("%s",buffer);
 
 	FILE *log;
 	log = fopen("log.txt","a+");
@@ -71,21 +68,7 @@ int kick_timer(int interval_secs)
 int stop_timer()
 {
 	timer_delete(timer_id);
-	/*
-   struct itimerspec in;
 
-	in.it_value.tv_sec = 0;
-    in.it_value.tv_nsec = 0;
-    in.it_interval.tv_sec = 0;
-    in.it_interval.tv_nsec = 0;
-    
-    //issue the periodic timer request here.
-    int status = timer_settime(timer_id, 0, &in, NULL) ;
-    if( status != 0)
-    {
-    	printf("Error on settime function\n");
-    	return status;
-    }*/
     return 0;
 }
 

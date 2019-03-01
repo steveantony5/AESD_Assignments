@@ -12,11 +12,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+
+#define BUFFERSIZE (500)
+
 /*****************************************************************
 						Globals
 *****************************************************************/
-char CPU_time[10], idle_time[10];
-
+float CPU_utiliztion;
 
 //structure to pass as argument to threads
 typedef struct
@@ -38,18 +40,22 @@ pthread_t master;
 *****************************************************************/
 void hanler_kill_child2(int num)
 {
-	printf("Killed child 2\n");
+	char buffer[BUFFERSIZE];
+
 	stop_timer();
 
-	FILE *log;
+	FILE *log_handler;
 
-	log = fopen("log.txt","a+");
-	if(log == NULL)
+	log_handler = fopen("log.txt","a+");
+	if(log_handler == NULL)
 		printf("Master: Error on opening file\n");
 
-	fwrite("Child2 kill handler:Killed thread\n", 1, strlen("Child2 kill handler:Killed thread\n"),log);
+	memset(buffer,0, BUFFERSIZE);
+    sprintf(buffer,"%d\tChild2 kill handler:Killed thread\n",(int)time(NULL));      
+    fwrite(buffer, 1, strlen(buffer),log_handler);
+    printf("%s",buffer);
 
-	fclose(log);
+	fclose(log_handler);
 
 	pthread_cancel(child2);
 
@@ -58,17 +64,20 @@ void hanler_kill_child2(int num)
 
 void hanler_kill_child1(int num)
 {
-	printf("Killed child 1\n");
+	char buffer[BUFFERSIZE];
 
-	FILE *log;
+	FILE *log_handler;
 
-	log = fopen("log.txt","a+");
-	if(log == NULL)
+	log_handler = fopen("log.txt","a+");
+	if(log_handler == NULL)
 		printf("Master: Error on opening file\n");
 
-	fwrite("Child1 kill handler:Killed thread\n", 1, strlen("Child1 kill handler:Killed thread\n"),log);
+	memset(buffer,0, BUFFERSIZE);
+    sprintf(buffer,"%d\tChild1 kill handler:Killed thread\n",(int)time(NULL));      
+    fwrite(buffer, 1, strlen(buffer),log_handler);
+    printf("%s",buffer);
 
-	fclose(log);
+	fclose(log_handler);
 
 	pthread_cancel(child1);
 
@@ -79,46 +88,46 @@ void hanler_kill_child1(int num)
 /*****************************************************************
 						Child 1 thread
 *****************************************************************/
-void *character_histogram(void *arg)
+void *character_histogram(void *args)
 {
+	files *ptr = (files *)args;
+	FILE *log_1, *input_file;
+
+	log_1 = fopen(ptr->filename_log,"a+");
+	if(log_1 == NULL)
+	{
+		printf("Error on opening file\n");
+	}
+
+	char buffer[BUFFERSIZE];
+
+	memset(buffer,0, BUFFERSIZE);
+	sprintf(buffer,"%d\tChild 1: Entered thread\n",(int)time(NULL));
+	fwrite(buffer, 1, strlen(buffer),log_1);
+	printf("%s",buffer);
 
 	signal(SIGUSR1,hanler_kill_child1);
 	signal(SIGUSR2,hanler_kill_child1);
 
-	/*Gets the start time of thread*/
-	clock_t begin = clock();
 
-	printf("Child 1:Begin time %ld\n",(begin));
-
-	files *ptr = (files *)arg;
-	FILE *log, *input_file;
-
-
-	log = fopen(ptr->filename_log,"a+");
-	if(log == NULL)
-		printf("Error on opening file\n");
-
-
-
-	char buffer[50];
-
-
-	printf("Child 1: Entered thread\n");
 	int ch_count[26] = {0};
 
-	printf("Child1: PID %ld\tLinux ID %d\n",pthread_self(),getpid());
-	fwrite("Child 1: Entered thread\n", 1, strlen("Child 1: Entered thread\n"),log);
 
-	sprintf(buffer,"Child1: PID %ld\tLinux ID %d\n",pthread_self(),getpid());
-	fwrite(buffer, 1, strlen(buffer),log);
+
+	memset(buffer,0, BUFFERSIZE);
+	sprintf(buffer,"%d\tChild1: PID %ld\tLinux ID %d\n",(int)time(NULL),pthread_self(),getpid());
+	fwrite(buffer, 1, strlen(buffer),log_1);
+	printf("%s",buffer);
 
 	input_file = fopen("input.txt","r");
 	if(input_file == NULL)
 		printf("Child 1: input.txt doesn't exists\n");
 
 	char ch;
-	while((ch = fgetc(input_file)) != EOF)
+	while(!feof(input_file))
 	{
+		ch = fgetc(input_file);
+	
 		if((ch >= 65) && (ch <=90))
 		{
 			ch_count[ch - 65] += 1;
@@ -133,26 +142,33 @@ void *character_histogram(void *arg)
 	//display the count
 	for(int index = 0; index<26;index++)
 	{
-		printf(" %c|%c - %d\n",(index+65),(index+97),ch_count[index]);
 
 		if(ch_count[index] < 100)
 		{
-			memset(buffer,0,sizeof(buffer));
-			sprintf(buffer,"%c|%c - %d\n",(index+65),(index+97),ch_count[index]);
-			fwrite(buffer,1,strlen(buffer),log);
+			memset(buffer,0,BUFFERSIZE);
+			sprintf(buffer,"%d\t%c|%c - %d\n",(int)time(NULL),(index+65),(index+97),ch_count[index]);
+			fwrite(buffer,1,strlen(buffer),log_1);
+			printf("%s",buffer);
 		}
 	}
 
 
-	fclose(log);
+	
+
+	memset(buffer,0, BUFFERSIZE);
+    sprintf(buffer,"%d\tChild 1: Thread Exited\n",(int)time(NULL));      
+    fwrite(buffer, 1, strlen(buffer),log_1);
+    printf("%s",buffer);
+
+
+	
+	fclose(log_1);
 
 	fclose(input_file);
 
-	clock_t exit = clock();
-
-	printf("Child 1: Exit time %ld\n",(exit));
-
 	pthread_cancel(child1);
+
+
 
 	return 0;
 
@@ -163,9 +179,9 @@ void *character_histogram(void *arg)
 *****************************************************************/
 void * master_thread(void *args)
 {
+
 	files *ptr = (files *)args;
 
-	printf("Master:Entered thread\n");
 
 	FILE *log;
 
@@ -173,13 +189,25 @@ void * master_thread(void *args)
 	if(log == NULL)
 		printf("Master: Error on opening file\n");
 
-	fwrite("Master:Entered thread\n", 1, strlen("Master:Entered thread\n"),log);
-	char buffer[50];
 
-	printf("master: PID %ld\tLinux ID %d\n",pthread_self(),getpid());
+	char buffer[BUFFERSIZE];
 
-	sprintf(buffer,"master: PID %ld\tLinux ID %d\n",pthread_self(),getpid());
+	memset(buffer,0, BUFFERSIZE);
+    sprintf(buffer,"%d\tMaster:Entered thread\n",(int)time(NULL));      
+    fwrite(buffer, 1, strlen(buffer),log);
+    printf("%s",buffer);
+
+	
+	memset(buffer,0, BUFFERSIZE);
+	sprintf(buffer,"%d\tmaster: PID %ld\tLinux ID %d\n",(int)time(NULL),pthread_self(),getpid());
 	fwrite(buffer, 1, strlen(buffer),log);
+	printf("%s",buffer);
+
+	memset(buffer,0, BUFFERSIZE);
+    sprintf(buffer,"%d\tMaster: Thread Exited\n",(int)time(NULL));      
+    fwrite(buffer, 1, strlen(buffer),log);
+    printf("%s",buffer);
+
 
 	fclose(log);
 
@@ -193,31 +221,42 @@ void * master_thread(void *args)
 void * CPU_time_utilization(void *args)
 {
 
-	printf("Child2:Entered thread\n");
-	/*Gets the start time of thread*/
-	clock_t begin = clock();
+	char buffer[BUFFERSIZE];
 
-	printf("Child 2:Begin time %ld\n",(begin));
+	char CPU_time[20];
+	char nice_time[20];
+	char system_time[20];
+	char idle_time[20];
+
+	float CPU_time_int;
+	float idle_time_int;
+	float nice_time_int;
+	float system_time_int;
 
 	files *ptr = (files *)args;
 
-	FILE *log = NULL,*proc = NULL;
+	FILE *log_2 = NULL,*proc = NULL;
 
-	log = fopen(ptr->filename_log,"a+");
-	if(log == NULL)
+	log_2 = fopen(ptr->filename_log,"a+");
+	if(log_2 == NULL)
 		printf("Child2: Error on opening file\n");
 
-	fwrite("Child2:Entered thread\n", 1, strlen("Child2:Entered thread\n"),log);
-
-	char buffer[50];
-
-	printf("Child2: PID %ld\tLinux ID %d\n",pthread_self(),getpid());
-
-	sprintf(buffer,"Child2: PID %ld\tLinux ID %d\n",pthread_self(),getpid());
-	fwrite(buffer, 1, strlen(buffer),log);
 
 
-	fclose(log);
+	memset(buffer,0, BUFFERSIZE);
+    sprintf(buffer,"%d\tChild2:Entered thread\n",(int)time(NULL));      
+    fwrite(buffer, 1, strlen(buffer),log_2);
+    printf("%s",buffer);
+
+	
+
+	memset(buffer,0, BUFFERSIZE);
+	sprintf(buffer,"%d\tChild2: PID %ld\tLinux ID %d\n",(int)time(NULL),pthread_self(),getpid());
+	fwrite(buffer, 1, strlen(buffer),log_2);
+	printf("%s",buffer);
+
+
+	fclose(log_2);
 
 	
 	signal(SIGUSR1,hanler_kill_child2);
@@ -225,16 +264,33 @@ void * CPU_time_utilization(void *args)
 
 	kick_timer(100000000);
 
+
+
 	
 	while(1)
 	{
+		memset(CPU_time,0,sizeof(CPU_time));
+		memset(nice_time,0,sizeof(nice_time));
+		memset(system_time,0,sizeof(system_time));
+		memset(idle_time,0,sizeof(idle_time));
+
 		proc = fopen("/proc/stat","r");
 		if(proc == NULL)
 			printf("Child 2:Error on opening proc/stat file\n");
 
 			
 		//cpu  39388 701 46592 4973982
-		fscanf(proc,"%*s %s %*s %*s %s",CPU_time, idle_time);
+		fscanf(proc,"%*s %s %s %s %s",CPU_time,nice_time,system_time, idle_time);
+
+		CPU_time_int = atoi (CPU_time);
+		idle_time_int = atoi(idle_time);
+		nice_time_int = atoi(nice_time);
+		system_time_int = atoi(system_time);
+
+		CPU_utiliztion = (CPU_time_int + nice_time_int + system_time_int)/ \
+									(CPU_time_int + nice_time_int + system_time_int+ idle_time_int);
+
+
 		fclose(proc);
 
 	}

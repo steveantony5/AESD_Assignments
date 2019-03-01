@@ -3,6 +3,8 @@
 #include <string.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
 
 #define BUFFERSIZE (200)
 
@@ -17,7 +19,6 @@ int pipe_fd_1[2], pipe_fd_2[2];
 
 void hanler_kill_Parent(int num)
 {
-        printf("Killed Parent\n");
         FILE *log_handler;
 
         log_handler = fopen("log_Pipes.txt","a+");
@@ -28,7 +29,10 @@ void hanler_kill_Parent(int num)
 
                         
 
-        fwrite("Parent kill handler:Killed Process\n", 1, strlen("Parent kill handler:Killed Process\n"),log_handler);
+        memset(buffer,0, BUFFERSIZE);
+        sprintf(buffer,"%d\tParent kill handler:Killed Process\n",(int)time(NULL));      
+        fwrite(buffer, 1, strlen(buffer),log_handler);
+        printf("%s",buffer);
 
         fclose(log_handler);
 
@@ -41,7 +45,6 @@ void hanler_kill_Parent(int num)
 
 void hanler_kill_Child(int num)
 {
-        printf("Killed Child\n");
         FILE *log_handler;
 
         log_handler = fopen("log_Pipes.txt","a+");
@@ -52,7 +55,10 @@ void hanler_kill_Child(int num)
 
                         
 
-        fwrite("Child kill handler:Killed Process\n", 1, strlen("Child kill handler:Killed Process\n"),log_handler);
+        memset(buffer,0, BUFFERSIZE);
+        sprintf(buffer,"%d\tChild kill handler:Killed Process\n",(int)time(NULL));      
+        fwrite(buffer, 1, strlen(buffer),log_handler);
+        printf("%s",buffer);
 
         fclose(log_handler);
 
@@ -113,17 +119,17 @@ int main()
                 write(pipe_fd_1[1], message, BUFFERSIZE);
 
                 memset(buffer, 0, BUFFERSIZE);
-                sprintf(buffer,"Parent: Sending message to child\n");
+                sprintf(buffer,"%d\tParent: Sending message to child\n",(int)time(NULL));
                 fwrite(buffer, 1, strlen(buffer),log);
 
                 memset(message, 0, BUFFERSIZE);
 
                 read(pipe_fd_2[0], message, BUFFERSIZE);
-                printf("Parent: Data received from child\n\t%s\n",message);
 
                 memset(buffer, 0, BUFFERSIZE);
-                sprintf(buffer,"Parent: The data received from child\n\t%s\n",message);
+                sprintf(buffer,"%d\tParent: The data received from child is %s\n",(int)time(NULL),message);
                 fwrite(buffer, 1, strlen(buffer),log);
+                printf("%s",buffer);
 
                 sscanf(message,"%s",command);
                 if(strcmp(command,"command") == 0)
@@ -151,18 +157,18 @@ int main()
 
 				memset(message, 0, BUFFERSIZE);
 
-                read(pipe_fd_1[0], message, BUFFERSIZE);
-                printf("Child: Data received from Parent\n\t%s\n",message);
+                read(pipe_fd_1[0], message, BUFFERSIZE);                
+
+                memset(buffer, 0, BUFFERSIZE);
+                sprintf(buffer,"%d\tChild: The data received from Parent is %s\n",(int)time(NULL),message);
+                fwrite(buffer, 1, strlen(buffer),log);
+                printf("%s",buffer);
 
                 sscanf(message,"%s",command);
                 if(strcmp(command,"command") == 0)
                 {
                     LED();
                 }
-
-                memset(buffer, 0, BUFFERSIZE);
-                sprintf(buffer,"Child: The data received from Parent\n\t%s\n",message);
-                fwrite(buffer, 1, strlen(buffer),log);
 
                 memset(message, 0, BUFFERSIZE);
                 printf("Child: Enter the message to be sent to Parent\n");
@@ -171,7 +177,7 @@ int main()
                 write(pipe_fd_2[1], message, BUFFERSIZE);
 
                 memset(buffer, 0, BUFFERSIZE);
-                sprintf(buffer,"Child: Sending message to Parent\n");
+                sprintf(buffer,"%d\tChild: Sending message to Parent\n",(int)time(NULL));
                 fwrite(buffer, 1, strlen(buffer),log);
 
                 fclose(log);
