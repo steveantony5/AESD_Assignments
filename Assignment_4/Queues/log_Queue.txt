@@ -1,0 +1,37 @@
+868	Process 1: PID - 208	 IPC method- POSIX Queues	 Queue name /my_queue
+876	Process 2: PID - 209	 IPC method- POSIX Queues	 Queue name /my_queue
+868	Process 1: Sending message to process2
+886	Process 1: The data received is I am steve
+
+881	Process 2: The data received is hello
+
+886	Process 2: Sending message to process1
+895	Process 2: The data received is Lucky boy
+
+900	Process 2: Sending message to process1
+886	Process 1: Sending message to process2
+900	Process 1: The data received is command OFF
+
+921	Process 2: The data received is command ON
+
+927	Process 2: Sending message to process1
+900	Process 1: Sending message to process2
+927	Process 1: The data received is command ON
+
+934	Process 2: The data received is command OFF
+
+940	Process 2: Sending message to process1
+927	Process 1: Sending message to process2
+940	Process 1: The data received is Kangaroo
+
+946	Process 2: The data received is bison lion
+
+971	Process 2: Sending message to process1
+940	Process 1: Sending message to process2
+971	Process 1: The data received is Pupp
+
+984	Process 2 kill handler:Killed Process
+979	Process 2: The data received is Pig
+
+987	Process 1 kill handler:Killed Process due to signal 2
+971	Process 1: Sending message to process2
