@@ -1,0 +1,37 @@
+1915	Process 1: PID - 270	 IPC method- Shared memory	SHM id 32768
+1921	Process 1: PID - 271	 IPC method- Shared memory	SHM id 32768
+1923	Process 1: Sending message to process2
+1930	Process 1: The data received hello
+
+1924	Process 2: The data received hey
+
+1930	Process 2: Sending message to process 1
+1937	Process 1: Sending message to process2
+1944	Process 1: The data received Debugginh dd
+
+1937	Process 2: The data received GDB id
+
+1943	Process 2: Sending message to process 1
+1956	Process 1: Sending message to process2
+1962	Process 1: The data received 232323
+
+1957	Process 2: The data received Ping ip
+
+1962	Process 2: Sending message to process 1
+1970	Process 1: Sending message to process2
+1977	Process 1: The data received command OFF
+
+1971	Process 2: The data received My God
+
+1976	Process 2: Sending message to process 1
+1982	Process 1: Sending message to process2
+1987	Process 1: The data received command OFF
+
+1982	Process 2: The data received command ON
+
+1987	Process 2: Sending message to process 1
+1997	Process 1 kill handler:Killed Process due to signal 2
+1995	Process 1: Sending message to process2
+1999	Process 2 kill handler:Killed Process
+1995	Process 2: The data received Lackkk
+
