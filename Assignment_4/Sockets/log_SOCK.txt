@@ -1,0 +1,32 @@
+1266	Process 2: PID - 228	IPC method- Sockets	Socket id 4
+1266	Process 1: PID - 230	IPC method- Sockets	Socket id 4
+1275	Process 2: The data received Hey dude
+
+1289	Process 2: Sending message to process1
+1275	Process 1: Sending message to process2
+1289	Process 1: The data received is How is your day
+
+1296	Process 2: The data received Pretty good
+
+1303	Process 2: Sending message to process1
+1296	Process 1: Sending message to process2
+1303	Process 1: The data received is command ON
+
+1309	Process 2: The data received command OFF
+
+1315	Process 2: Sending message to process1
+1309	Process 1: Sending message to process2
+1315	Process 1: The data received is command ON
+
+1361	Process 2: The data received haollidays
+
+1368	Process 2: Sending message to process1
+1361	Process 1: Sending message to process2
+1368	Process 1: The data received is command ON
+
+1379	Process 2 kill handler:Killed Process due to 2
+1373	Process 1: Sending message to process2
+1379	Process 1: The data received is 
+1373	Process 2: The data received command OFF
+
+1382	Process 1 kill handler:Killed Process due to signal 2
