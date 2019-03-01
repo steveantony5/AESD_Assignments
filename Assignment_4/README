@@ -58,3 +58,13 @@ Thread 2 is used to find the CPU Utilization. POSIX timers are used to print the
 
 Steps to execute
 1) ./thread <log_filename>
+
+
+
+References
+----------
+https://www.youtube.com/watch?v=SMeDw2GDMsE&t=563s
+https://www.youtube.com/watch?v=0-8Gl6LG3ew
+https://www.youtube.com/watch?v=LtXEMwSG5-8&t=1s
+https://www.youtube.com/results?search_query=posix+message+queue
+https://users.pja.edu.pl/~jms/qnx/help/watcom/clibref/mq_overview.html
