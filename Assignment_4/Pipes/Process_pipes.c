@@ -102,6 +102,7 @@ int main()
 		return 1;
 	}
 
+
     //forking to create a new child process
 	pid = fork();
 
@@ -129,6 +130,12 @@ int main()
                         return 1;
                 }
                 
+                memset(buffer, 0, BUFFERSIZE);
+
+                sprintf(buffer,"%d\tParent: PID - %d\t IPC method- Pipes\n",(int)time(NULL),getpid());
+                printf("%s",buffer);
+                fwrite(buffer, 1, strlen(buffer),log);
+
                 memset(message, 0, BUFFERSIZE);
                 printf("Parent: Enter the message to be sent to child\n");
 
@@ -173,6 +180,12 @@ int main()
                         printf("Parent: File doesn't exits\n");
                         return 1;
                 }
+
+                memset(buffer, 0, BUFFERSIZE);
+
+                sprintf(buffer,"%d\tChild: PID - %d\t IPC method- Pipes\n",(int)time(NULL),getpid());
+                printf("%s",buffer);
+                fwrite(buffer, 1, strlen(buffer),log);
 
 				memset(message, 0, BUFFERSIZE);
 
