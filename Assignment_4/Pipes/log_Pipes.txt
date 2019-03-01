@@ -1,0 +1,35 @@
+328	Child: The data received from Parent is Hello
+
+333	Child: Sending message to Parent
+328	Parent: Sending message to child
+333	Parent: The data received from child is How are you
+
+340	Child: The data received from Parent is command ON
+
+346	Child: Sending message to Parent
+340	Parent: Sending message to child
+346	Parent: The data received from child is Happy
+
+352	Child: The data received from Parent is command OFF
+
+362	Child: Sending message to Parent
+352	Parent: Sending message to child
+362	Parent: The data received from child is Good morning
+
+367	Child: The data received from Parent is Good evening
+
+370	Child: Sending message to Parent
+367	Parent: Sending message to child
+370	Parent: The data received from child is India
+
+385	Child: The data received from Parent is command ON
+
+390	Child: Sending message to Parent
+385	Parent: Sending message to child
+390	Parent: The data received from child is command OFF
+
+483	Child kill handler:Killed Process due to signal number 2
+396	Child: The data received from Parent is Happy
+
+483	Parent kill handler:Killed Process due to signal number 2
+396	Parent: Sending message to child
