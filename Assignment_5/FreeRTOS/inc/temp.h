@@ -29,7 +29,9 @@
 /**********************************************
  *        MACRO
  **********************************************/
-#define TEMP_THRESHOLD (32)
+#define TEMP_THRESHOLD_HIGHER (28)
+#define TEMP_THRESHOLD_LOWER  (23)
+
 #define QUEUE_TIMEOUT_TICKS (10)
 #define NOTIFY_TAKE_TIMEOUT (500)
 #define TEMP_TIME_PERIOD_MS (1000)
@@ -63,10 +65,39 @@ extern QueueHandle_t myQueue_temp, myQueue_alert;
 /**********************************************
  *        Function Prototypes
  **********************************************/
+/********************************************
+ * Func name :   TempTask
+ * Parameters:   none
+ * Description : Thread for temperature task
+ ********************************************/
 void TempTask(void *);
+
+/********************************************
+ * Func name :   vTimerCallback_Temp_handler
+ * Parameters:   none
+ * Description : handler for temperature timer
+ ********************************************/
 void vTimerCallback_Temp_handler( TimerHandle_t  *);
+
+/********************************************
+ * Func name :   i2c_setup
+ * Parameters:   none
+ * Description : Configuration of i2c bus
+ ********************************************/
 void i2c_setup(void);
-uint16_t read_temp(uint8_t , uint8_t);
+
+/********************************************
+ * Func name :   read_temp
+ * Parameters:   slave address, register address
+ * Description : reads the temperature
+ ********************************************/
+int16_t read_temp(uint8_t , uint8_t);
+
+/********************************************
+ * Func name :   AlertTask
+ * Parameters:   none
+ * Description : Thread for alert task
+ ********************************************/
 void AlertTask(void *);
 
 #endif /* TEMP_H_ */

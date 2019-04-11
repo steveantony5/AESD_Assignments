@@ -38,11 +38,28 @@
 /**********************************************
  *        Function Prototypes
  **********************************************/
+/********************************************
+ * Func name :   LEDTask
+ * Parameters:   none
+ * Description : Thread for LED task
+ ********************************************/
 void LEDTask(void *pvParameters);
+
+/********************************************
+ * Func name :   vTimerCallback_LED_handler
+ * Parameters:   none
+ * Description : timer handler for LED timer
+ ********************************************/
 void vTimerCallback_LED_handler( TimerHandle_t  *pxTimer );
+
+/**********************************************
+ *        Globals
+ **********************************************/
 QueueHandle_t myQueue_temp, myQueue_led, myQueue_alert;
 struct log_struct_led log_led;
 uint32_t output_clock_rate_hz;
+
+//For temperature notification
 TaskHandle_t handle;
 
 

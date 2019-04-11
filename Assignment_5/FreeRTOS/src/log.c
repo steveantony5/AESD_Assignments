@@ -47,13 +47,13 @@ void LogTask(void *pvParameters)
     for(;;)
     {
         if(xQueueReceive(myQueue_led, &log_led_recv, TIMEOUT_TICKS ) == pdTRUE )
-            UARTprintf("--->LED\ntoggle %d\nname %s\nTS: %s\n\n",log_led_recv.count,log_led_recv.name,log_led_recv.time_stamp);
+            UARTprintf("[%s]--->LED   name: %s toggle count: %d\n",log_led_recv.time_stamp,log_led_recv.name,log_led_recv.count);
 
         if(xQueueReceive(myQueue_temp, &log_temp_recv, TIMEOUT_TICKS ) == pdTRUE )
-            UARTprintf("--->Temp\n TS: %s\ntemp %s\n\n",log_temp_recv.time_stamp,log_temp_recv.temp);
+            UARTprintf("[%s]--->Temp  temp: %s\n",log_temp_recv.time_stamp,log_temp_recv.temp);
 
         if(xQueueReceive(myQueue_alert, &temp_notf, TIMEOUT_TICKS ) == pdTRUE )
-            UARTprintf("--->Temp range higher -- notified\n\n");
+            UARTprintf("------------->Temp out of range - notified\n");
 
     }
 }

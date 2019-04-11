@@ -32,7 +32,18 @@ extern QueueHandle_t myQueue_temp, myQueue_led, myQueue_alert;
 /**********************************************
  *        Function Prototypes
  **********************************************/
+/********************************************
+ * Func name : queue_init
+ * Parameters: none
+ * Description : initiates the queues for logger
+ */
 void queue_init();
+
+/********************************************
+ * Func name :   LogTask
+ * Parameters:   none
+ * Description : Thread for logger task
+ ********************************************/
 void LogTask(void *pvParameters);
 
 #endif /* LOG_H_ */
