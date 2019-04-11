@@ -50,16 +50,16 @@ void TempTask(void *pvParameters)
          {
              if(FLAG_TEMP == pdTRUE)
              {
-                 uint16_t temp_value =  read_temp(TEMP_SENSOR_ADDR, TEMP_REG_OFFSET_ADDR);
+                 int16_t temp_value =  read_temp(TEMP_SENSOR_ADDR, TEMP_REG_OFFSET_ADDR);
 
                  /*convert temperature to celcius*/
                  float temperature_C;
                  temperature_C = temp_value * 0.0625;
 
-                 uint32_t temp_dec = (uint32_t)(10000.0 * temperature_C);
+                 int32_t temp_dec = (uint32_t)(10000.0 * temperature_C);
 
                  sprintf(log_temp.time_stamp,"%d", xTaskGetTickCount());
-                 sprintf(log_temp.temp,"Temp = %d.%d C", (uint32_t)temp_dec/10000, (uint32_t)temp_dec%10000);
+                 sprintf(log_temp.temp,"Temp = %d.%d C", (int32_t)temp_dec/10000, (int32_t)temp_dec%10000);
 
                  //UARTprintf("%s\n",log_temp.temp);
                  xQueueSendToBack( myQueue_temp,( void * ) &log_temp, QUEUE_TIMEOUT_TICKS ) ;
